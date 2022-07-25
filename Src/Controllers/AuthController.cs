@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace auth_sevice.Src.Controllers
 {
-
-
   [ApiController]
   [Route("[controller]")]
   public class AuthController : ControllerBase
@@ -200,6 +198,19 @@ namespace auth_sevice.Src.Controllers
         success = true,
         status = 200,
         data = true
+      };
+    }
+
+    [HttpPost("verify-access-token")]
+    public ActionResult<ResponseDto<bool>> VerifyAccessToken(AccessTokenDto data)
+    {
+      var valid = tm.VerifyAccessToken(data.token);
+
+      return new ResponseDto<bool>
+      {
+        success = true,
+        status = 200,
+        data = valid
       };
     }
   }

@@ -10,4 +10,9 @@ namespace auth_sevice.Src.Dtos
   {
     public string token { get; set; } = string.Empty;
   }
+
+  public class AccessTokenDto
+  {
+    public string token { get; set; } = string.Empty;
+  }
 }
