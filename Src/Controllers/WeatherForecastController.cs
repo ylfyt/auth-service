@@ -1,3 +1,4 @@
+using auth_sevice.Src.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace auth_sevice.Src.Controllers;
@@ -18,6 +19,7 @@ public class WeatherForecastController : ControllerBase
     _logger = logger;
   }
 
+  [Authorize]
   [HttpGet(Name = "GetWeatherForecast")]
   public IEnumerable<WeatherForecast> Get()
   {
