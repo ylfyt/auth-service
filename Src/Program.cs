@@ -1,10 +1,7 @@
 global using auth_sevice.Src.Utils;
-using System.Text;
 using auth_sevice.Src.Data;
 using auth_sevice.Src.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 DotEnv.Init();
@@ -45,22 +42,6 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-  var signingKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(ServerInfo.JWT_ACCESS_TOKEN_SECRET_KEY));
-
-  options.TokenValidationParameters = new TokenValidationParameters
-  {
-    ValidateIssuerSigningKey = true,
-    IssuerSigningKey = signingKey,
-    ValidateIssuer = false,
-    ValidateAudience = false,
-    ClockSkew = TimeSpan.Zero,
-  };
-});
-
 builder.Services.AddDbContext<DataContext>(options =>
 {
   options.UseNpgsql(ServerInfo.DB_CONNECT);
@@ -71,19 +52,13 @@ builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
 builder.Services.AddHttpContextAccessor();
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
   app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
