@@ -1,4 +1,6 @@
 global using auth_sevice.Src.Utils;
+using auth_sevice.Src.Data;
+using Microsoft.EntityFrameworkCore;
 
 DotEnv.Init();
 ServerInfo.Init();
@@ -11,6 +13,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<DataContext>(options =>
+{
+  options.UseNpgsql(ServerInfo.DB_CONNECT);
+}, ServiceLifetime.Transient);
+
 
 var app = builder.Build();
 
@@ -26,5 +34,16 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+  var services = scope.ServiceProvider;
+
+  var context = services.GetRequiredService<DataContext>();
+  if (context.Database.GetPendingMigrations().Any())
+  {
+    context.Database.Migrate();
+  }
+}
 
 app.Run();
