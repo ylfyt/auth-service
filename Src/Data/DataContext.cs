@@ -9,6 +9,8 @@ namespace auth_sevice.Src.Data
     public DataContext(DbContextOptions options) : base(options)
     {
     }
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     public override int SaveChanges()
     {
@@ -40,8 +42,5 @@ namespace auth_sevice.Src.Data
         }
       }
     }
-
-    public DbSet<User> Users { get; set; } = null!;
-
   }
 }

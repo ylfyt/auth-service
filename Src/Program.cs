@@ -1,5 +1,6 @@
 global using auth_sevice.Src.Utils;
 using auth_sevice.Src.Data;
+using auth_sevice.Src.Services;
 using Microsoft.EntityFrameworkCore;
 
 DotEnv.Init();
@@ -18,6 +19,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
   options.UseNpgsql(ServerInfo.DB_CONNECT);
 }, ServiceLifetime.Transient);
+
+// SERVICES DEPENDENCY INJECTION
+builder.Services.AddScoped<ITokenManager, TokenManager>();
+builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
+builder.Services.AddHttpContextAccessor();
 
 
 var app = builder.Build();
