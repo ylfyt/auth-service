@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using auth_sevice.Src.Data;
+using auth_sevice.Src.Dtos;
 using auth_sevice.Src.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -88,7 +89,7 @@ namespace auth_sevice.Src.Services
       }
     }
 
-    public bool VerifyAccessToken(string token)
+    public AccessTokenPayload? VerifyAccessToken(string token)
     {
       try
       {
@@ -104,20 +105,25 @@ namespace auth_sevice.Src.Services
               );
 
         var rawRefreshTokenId = claims.FindFirstValue("jid");
-        if (rawRefreshTokenId == null) return false;
+        var username = claims.FindFirstValue(ClaimTypes.Name);
+        if (rawRefreshTokenId == null || username == null) return null;
 
         if (!Guid.TryParse(rawRefreshTokenId, out Guid refreshTokenId))
-          return false;
+          return null;
 
 
         var exist = blacklistTokenManager.IsRefreshTokenIdExist(refreshTokenId);
-        if (exist) return false;
+        if (exist) return null;
 
-        return true;
+
+        return new AccessTokenPayload
+        {
+          Username = username,
+        };
       }
       catch (System.Exception)
       {
-        return false;
+        return null;
       }
     }
   }

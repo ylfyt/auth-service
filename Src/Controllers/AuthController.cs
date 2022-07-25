@@ -202,15 +202,19 @@ namespace auth_sevice.Src.Controllers
     }
 
     [HttpPost("verify-access-token")]
-    public ActionResult<ResponseDto<bool>> VerifyAccessToken(AccessTokenDto data)
+    public ActionResult<ResponseDto<VerifyResponse>> VerifyAccessToken(AccessTokenDto data)
     {
-      var valid = tm.VerifyAccessToken(data.token);
+      var payload = tm.VerifyAccessToken(data.token);
 
-      return new ResponseDto<bool>
+      return new ResponseDto<VerifyResponse>
       {
         success = true,
         status = 200,
-        data = valid
+        data = new VerifyResponse
+        {
+          Payload = payload ?? null,
+          Valid = payload != null
+        }
       };
     }
   }

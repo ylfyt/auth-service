@@ -1,3 +1,4 @@
+using auth_sevice.Src.Dtos;
 using auth_sevice.Src.Models;
 
 namespace auth_sevice.Src.Services
@@ -8,6 +9,6 @@ namespace auth_sevice.Src.Services
 
     public string CreateAccessToken(User user, Guid refreshTokenId);
     public string? Verify(string token);
-    public bool VerifyAccessToken(string token);
+    public AccessTokenPayload? VerifyAccessToken(string token);
   }
 }

@@ -8,4 +8,10 @@ namespace auth_sevice.Src.Dtos
     public User User { get; set; } = null!;
     public TokenDto Token { get; set; } = null!;
   }
+
+  public class VerifyResponse
+  {
+    public bool Valid { get; set; }
+    public AccessTokenPayload? Payload { get; set; } = null!;
+  }
 }
