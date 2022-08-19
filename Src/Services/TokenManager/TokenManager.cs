@@ -1,12 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using auth_sevice.Src.Data;
-using auth_sevice.Src.Dtos;
-using auth_sevice.Src.Models;
+using auth_sevice.src.Data;
+using auth_sevice.src.Dtos;
+using auth_sevice.src.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace auth_sevice.Src.Services
+namespace auth_sevice.src.Services
 {
   public class TokenManager : ITokenManager
   {

@@ -1,7 +1,7 @@
-using auth_sevice.Src.Dtos;
-using auth_sevice.Src.Models;
+using auth_sevice.src.Dtos;
+using auth_sevice.src.Models;
 
-namespace auth_sevice.Src.Services
+namespace auth_sevice.src.Services
 {
   public interface ITokenManager
   {

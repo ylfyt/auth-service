@@ -1,6 +1,6 @@
-global using auth_sevice.Src.Utils;
-using auth_sevice.Src.Data;
-using auth_sevice.Src.Services;
+global using auth_sevice.src.Utils;
+using auth_sevice.src.Data;
+using auth_sevice.src.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 

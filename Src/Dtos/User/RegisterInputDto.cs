@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace auth_sevice.Src.Dtos
+namespace auth_sevice.src.Dtos
 {
   public class RegisterInputDto
   {

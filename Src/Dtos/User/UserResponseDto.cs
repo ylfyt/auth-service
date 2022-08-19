@@ -1,7 +1,7 @@
-using auth_sevice.Src.Models;
-using auth_sevice.Src.Types;
+using auth_sevice.src.Models;
+using auth_sevice.src.Types;
 
-namespace auth_sevice.Src.Dtos
+namespace auth_sevice.src.Dtos
 {
   public class DataUser : BaseData
   {

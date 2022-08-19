@@ -1,11 +1,11 @@
-using auth_sevice.Src.Data;
-using auth_sevice.Src.Dtos;
-using auth_sevice.Src.Models;
-using auth_sevice.Src.Services;
+using auth_sevice.src.Data;
+using auth_sevice.src.Dtos;
+using auth_sevice.src.Models;
+using auth_sevice.src.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace auth_sevice.Src.Controllers
+namespace auth_sevice.src.Controllers
 {
   [ApiController]
   [Route("[controller]")]

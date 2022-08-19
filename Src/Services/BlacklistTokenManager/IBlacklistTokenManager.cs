@@ -1,4 +1,4 @@
-namespace auth_sevice.Src.Services
+namespace auth_sevice.src.Services
 {
   public interface IBlacklistTokenManager
   {

@@ -1,4 +1,4 @@
-namespace auth_sevice.Src.Types
+namespace auth_sevice.src.Types
 {
   public class BaseModel
   {

@@ -1,4 +1,4 @@
-namespace auth_sevice.Src.Utils
+namespace auth_sevice.src.Utils
 {
   public static class ServerInfo
   {

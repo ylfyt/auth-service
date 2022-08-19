@@ -1,6 +1,6 @@
-using auth_sevice.Src.Types;
+using auth_sevice.src.Types;
 
-namespace auth_sevice.Src.Models
+namespace auth_sevice.src.Models
 {
   public class RefreshToken : BaseModel
   {

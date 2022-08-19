@@ -1,8 +1,8 @@
-using auth_sevice.Src.Models;
-using auth_sevice.Src.Types;
+using auth_sevice.src.Models;
+using auth_sevice.src.Types;
 using Microsoft.EntityFrameworkCore;
 
-namespace auth_sevice.Src.Data
+namespace auth_sevice.src.Data
 {
   public class DataContext : DbContext
   {

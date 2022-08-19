@@ -5,53 +5,53 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using auth_sevice.Src.Data;
+using auth_sevice.src.Data;
 
 #nullable disable
 
 namespace auth_sevice.src.Migrations
 {
-    [DbContext(typeof(DataContext))]
-    [Migration("20220725062153_Initial")]
-    partial class Initial
+  [DbContext(typeof(DataContext))]
+  [Migration("20220725062153_Initial")]
+  partial class Initial
+  {
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+      modelBuilder
+          .HasAnnotation("ProductVersion", "6.0.7")
+          .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+      NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("auth_sevice.Src.Models.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+      modelBuilder.Entity("auth_sevice.src.Models.User", b =>
+          {
+            b.Property<Guid>("Id")
+                      .ValueGeneratedOnAdd()
+                      .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+            b.Property<DateTime>("CreatedAt")
+                      .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
+            b.Property<string>("Password")
+                      .IsRequired()
+                      .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+            b.Property<DateTime>("UpdatedAt")
+                      .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
+            b.Property<string>("Username")
+                      .IsRequired()
+                      .HasColumnType("text");
 
-                    b.HasKey("Id");
+            b.HasKey("Id");
 
-                    b.HasIndex("Username")
-                        .IsUnique();
+            b.HasIndex("Username")
+                      .IsUnique();
 
-                    b.ToTable("Users");
-                });
+            b.ToTable("Users");
+          });
 #pragma warning restore 612, 618
-        }
     }
+  }
 }

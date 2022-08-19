@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
-using auth_sevice.Src.Types;
+using auth_sevice.src.Types;
 using Microsoft.EntityFrameworkCore;
 
-namespace auth_sevice.Src.Models
+namespace auth_sevice.src.Models
 {
   [Index(nameof(User.Username), IsUnique = true)]
   public class User : BaseModel

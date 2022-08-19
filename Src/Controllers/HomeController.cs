@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-namespace auth_sevice.Src.Controllers
+namespace auth_sevice.src.Controllers
 {
   [ApiController, Route("")]
   public class HomeController : ControllerBase
