@@ -62,6 +62,8 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
+
 using (var scope = app.Services.CreateScope())
 {
   var services = scope.ServiceProvider;
