@@ -59,10 +59,20 @@ namespace auth_sevice.src.Controllers
       {
         var user = await context.Users.Where(u => u.Username == data.Username).FirstOrDefaultAsync();
 
-        if (user == null) return BadRequest("Username or password is wrong");
+        if (user == null) return BadRequest(new ResponseDto<DataUser>{
+          message = "Username or password is wrong",
+          data = null,
+          status = 400,
+          success = false
+        });
 
         var valid = BCrypt.Net.BCrypt.Verify(data.Password, user.Password);
-        if (!valid) return BadRequest("Username or password is wrong");
+        if (!valid) return BadRequest(new ResponseDto<DataUser>{
+          message = "Username or password is wrong",
+          data = null,
+          status = 400,
+          success = false
+        });
 
         // CREATE TOKEN
         var tokenData = await tm.CreateRefreshToken(user);
