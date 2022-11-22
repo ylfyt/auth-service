@@ -8,7 +8,8 @@ namespace auth_sevice.src.Services
 
   public class BlacklistTokenManager : IBlacklistTokenManager
   {
-    public static List<BlacklistToken> blacklistRefreshTokens = new List<BlacklistToken>();
+    private static List<BlacklistToken> blacklistRefreshTokens = new List<BlacklistToken>();
+    private static bool IsCleanUpStarted = false;
 
     public bool CreateToken(Guid refreshTokenId)
     {
@@ -18,6 +19,12 @@ namespace auth_sevice.src.Services
         ExpiredAt = expiredAt,
         Jid = refreshTokenId
       });
+
+      if (!IsCleanUpStarted)
+      {
+        IsCleanUpStarted = true;
+        StartCleanUp();
+      }
 
       return true;
     }
@@ -33,23 +40,31 @@ namespace auth_sevice.src.Services
       return false;
     }
 
-    public static void StartCleanUp()
+    private static void StartCleanUp()
     {
-      Console.WriteLine($"Mext clean up in {(ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME) / 60} minutes");
+      Console.WriteLine($"Next clean up in {(ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME + 60) / 60} minutes");
       System.Threading.Tasks.Task.Factory.StartNew(() =>
       {
-        Thread.Sleep(Convert.ToInt32(ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME) * 1000);
+        Thread.Sleep(Convert.ToInt32(ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME + 60) * 1000);
         Console.WriteLine("Start clean up");
         blacklistRefreshTokens = blacklistRefreshTokens.Where(token =>
         {
-          if (token.ExpiredAt < DateTimeOffset.Now.ToUnixTimeSeconds())
+          var nowTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+          if (token.ExpiredAt < nowTimestamp)
           {
             Console.WriteLine($"Delete {token.Jid}");
           }
 
-          return token.ExpiredAt > DateTimeOffset.Now.ToUnixTimeSeconds();
+          return token.ExpiredAt > nowTimestamp;
         }).ToList();
         Console.WriteLine("Done");
+
+        if (blacklistRefreshTokens.Count == 0)
+        {
+          IsCleanUpStarted = false;
+          System.Console.WriteLine("Clean up is stopped. Blacklisted token is empty");
+          return;
+        }
         StartCleanUp();
       });
     }
