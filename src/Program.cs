@@ -75,4 +75,5 @@ using (var scope = app.Services.CreateScope())
   }
 }
 
+BlacklistTokenManager.StartCleanUp();
 app.Run();
