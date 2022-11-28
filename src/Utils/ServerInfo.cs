@@ -3,6 +3,7 @@ namespace auth_sevice.src.Utils
   public static class ServerInfo
   {
     public static string DB_CONNECT { get; set; } = string.Empty;
+    public static string REDIS_CONNECT { get; set; } = string.Empty;
     public static string JWT_ACCESS_TOKEN_SECRET_KEY { get; set; } = string.Empty;
     public static string JWT_REFRESH_TOKEN_SECRET_KEY { get; set; } = string.Empty;
     public static double JWT_ACCESS_TOKEN_EXPIRY_TIME { get; set; }
@@ -14,17 +15,20 @@ namespace auth_sevice.src.Utils
       var refreshTokenSecretKey = Environment.GetEnvironmentVariable("JWT_REFRESH_TOKEN_SECRET_KEY");
       var accessTokenExpiryTime = Environment.GetEnvironmentVariable("JWT_ACCESS_TOKEN_EXPIRY_TIME");
       var refreshTokenExpiryTime = Environment.GetEnvironmentVariable("JWT_REFRESH_TOKEN_EXPIRY_TIME");
+      var redisConnect = Environment.GetEnvironmentVariable("REDIS_CONNECT");
 
       if (
         dbConnect == null ||
         accessTokenSecretKey == null ||
         refreshTokenSecretKey == null ||
         accessTokenExpiryTime == null ||
-        refreshTokenExpiryTime == null
+        refreshTokenExpiryTime == null ||
+        redisConnect == null
       )
         throw new Exception("======= SOME ENV VARIABLE IS NULL =======");
 
       ServerInfo.DB_CONNECT = dbConnect;
+      ServerInfo.REDIS_CONNECT = redisConnect;
       ServerInfo.JWT_ACCESS_TOKEN_SECRET_KEY = accessTokenSecretKey;
       ServerInfo.JWT_REFRESH_TOKEN_SECRET_KEY = refreshTokenSecretKey;
       ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME = Double.Parse(accessTokenExpiryTime);

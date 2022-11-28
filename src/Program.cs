@@ -3,6 +3,7 @@ using auth_sevice.src.Data;
 using auth_sevice.src.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Redis.OM;
 
 DotEnv.Init();
 ServerInfo.Init();
@@ -42,14 +43,18 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+// SERVICES DEPENDENCY INJECTION
 builder.Services.AddDbContext<DataContext>(options =>
 {
   options.UseNpgsql(ServerInfo.DB_CONNECT);
 }, ServiceLifetime.Transient);
 
-// SERVICES DEPENDENCY INJECTION
+
+builder.Services.AddSingleton(new RedisConnectionProvider(ServerInfo.REDIS_CONNECT));
 builder.Services.AddScoped<ITokenManager, TokenManager>();
-builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
+// builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
+builder.Services.AddSingleton<IBlacklistTokenManager, RedisBlacklistTokenManager>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

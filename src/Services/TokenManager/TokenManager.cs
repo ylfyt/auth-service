@@ -93,6 +93,7 @@ namespace auth_sevice.src.Services
     {
       try
       {
+        Console.WriteLine(1);
         var claims = new JwtSecurityTokenHandler().ValidateToken(token,
                   new TokenValidationParameters
                   {
@@ -103,19 +104,18 @@ namespace auth_sevice.src.Services
                     ClockSkew = TimeSpan.Zero
                   }, out SecurityToken validatedToken
               );
-
+        Console.WriteLine(2);
         var rawRefreshTokenId = claims.FindFirstValue("jid");
         var username = claims.FindFirstValue(ClaimTypes.Name);
         if (rawRefreshTokenId == null || username == null) return null;
 
         if (!Guid.TryParse(rawRefreshTokenId, out Guid refreshTokenId))
           return null;
-
-
+        Console.WriteLine(3);
         var exist = blacklistTokenManager.IsRefreshTokenIdExist(refreshTokenId);
         if (exist) return null;
 
-
+        Console.WriteLine(4);
         return new AccessTokenPayload
         {
           Username = username,
