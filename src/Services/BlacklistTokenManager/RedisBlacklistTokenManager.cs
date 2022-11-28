@@ -1,57 +1,28 @@
+using StackExchange.Redis;
+
 namespace auth_sevice.src.Services;
-
-using Redis.OM.Modeling;
-using Redis.OM;
-
-[Document]
-public class RedisBlacklistedToken
-{
-  [RedisIdField]
-  [Indexed]
-  public Guid Id { get; set; }
-
-  [Indexed]
-  public long CreatedAt { get; set; }
-
-}
 
 public class RedisBlacklistTokenManager : IBlacklistTokenManager
 {
-  private readonly RedisConnectionProvider _provider;
-  public RedisBlacklistTokenManager(RedisConnectionProvider provider)
+  private readonly IDatabase redisDb;
+
+  public RedisBlacklistTokenManager(IConnectionMultiplexer _redis)
   {
-    _provider = provider;
+    redisDb = _redis.GetDatabase();
   }
   public bool CreateToken(Guid refreshTokenId)
   {
-    var collection = _provider.RedisCollection<RedisBlacklistedToken>();
-    var res = collection.Insert(new RedisBlacklistedToken
-    {
-      Id = refreshTokenId,
-      CreatedAt = DateTimeOffset.Now.ToUnixTimeSeconds()
-    });
-    Console.WriteLine(res);
-    throw new NotImplementedException();
+    var duration = TimeSpan.FromSeconds(ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME);
+    var success = redisDb.StringSet(refreshTokenId.ToString(), true, duration);
+    return success;
   }
 
   public bool IsRefreshTokenIdExist(Guid refreshTokenId)
   {
-    Console.WriteLine(10);
-    var collection = _provider.RedisCollection<RedisBlacklistedToken>();
-    Console.WriteLine(11);
-    try
-    {
-      var data = collection.FirstOrDefault(token => token.CreatedAt < DateTimeOffset.Now.ToUnixTimeSeconds());
-
-      Console.WriteLine(12);
-      Console.WriteLine(data?.Id);
-      Console.WriteLine(13);
-    }
-    catch (System.Exception e)
-    {
-      Console.WriteLine(e);
-      throw;
-    }
-    throw new NotImplementedException();
+    var value = redisDb.StringGet(refreshTokenId.ToString());
+    if (value.IsNull)
+      return false;
+    
+    return true;
   }
 }
