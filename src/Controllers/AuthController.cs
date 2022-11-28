@@ -59,7 +59,8 @@ namespace auth_sevice.src.Controllers
       {
         var user = await context.Users.Where(u => u.Username == data.Username).FirstOrDefaultAsync();
 
-        if (user == null) return BadRequest(new ResponseDto<DataUser>{
+        if (user == null) return BadRequest(new ResponseDto<DataUser>
+        {
           message = "Username or password is wrong",
           data = null,
           status = 400,
@@ -67,7 +68,8 @@ namespace auth_sevice.src.Controllers
         });
 
         var valid = BCrypt.Net.BCrypt.Verify(data.Password, user.Password);
-        if (!valid) return BadRequest(new ResponseDto<DataUser>{
+        if (!valid) return BadRequest(new ResponseDto<DataUser>
+        {
           message = "Username or password is wrong",
           data = null,
           status = 400,
@@ -108,33 +110,32 @@ namespace auth_sevice.src.Controllers
     {
       try
       {
-        var error = tm.Verify(data.RefreshToken);
-        RefreshToken? oldRefreshToken = null;
-        if (error == "TOKEN_EXPIRED" || error == null)
+        var isValid = tm.ValidateRefreshToken(data.RefreshToken, out Guid refreshTokenId);
+      
+        RefreshToken? oldRefreshToken = null;  
+        if (refreshTokenId != Guid.Empty)
         {
-          oldRefreshToken = await context.RefreshTokens.Where(t => t.Token == data.RefreshToken).FirstOrDefaultAsync();
+          oldRefreshToken = await context.RefreshTokens.Where(t => t.Id == refreshTokenId).FirstOrDefaultAsync();
           if (oldRefreshToken != null)
           {
             context.RefreshTokens.Remove(oldRefreshToken);
             await context.SaveChangesAsync();
           }
-
         }
 
-        if (error != null || oldRefreshToken == null)
-          return BadRequest("Token is invalid");
-
+        if (!isValid || oldRefreshToken == null)
+          return BadRequest("Token is not valid");
 
         var user = await context.Users.FindAsync(oldRefreshToken.UserId);
         if (user == null) return BadRequest("User not found");
 
         var tokenData = await tm.CreateRefreshToken(user);
         var refreshToken = tokenData.Item1;
-        var refreshTokenId = tokenData.Item2;
+        var newRefreshTokenId = tokenData.Item2;
         if (refreshToken == null)
           return BadRequest("Already logged in");
 
-        var accessToken = tm.CreateAccessToken(user, refreshTokenId);
+        var accessToken = tm.CreateAccessToken(user, newRefreshTokenId);
 
         new TokenDto
         {
@@ -162,19 +163,19 @@ namespace auth_sevice.src.Controllers
     [HttpPost("logout")]
     public async Task<ActionResult<ResponseDto<bool>>> Logout(RefreshTokenDto data)
     {
-      var error = tm.Verify(data.RefreshToken);
-
-      if (error == "NOT_VALID")
+      var isValid = tm.ValidateRefreshToken(data.RefreshToken, out Guid refreshTokenId);
+    
+      if (!isValid && refreshTokenId == Guid.Empty)
         return BadRequest("Token is invalid");
 
-      var oldRefreshToken = await context.RefreshTokens.Where(t => t.Token == data.RefreshToken).FirstOrDefaultAsync();
+      var oldRefreshToken = await context.RefreshTokens.FirstOrDefaultAsync(token => token.Id == refreshTokenId);
       if (oldRefreshToken == null) return BadRequest("Token is invalid");
 
       context.RefreshTokens.Remove(oldRefreshToken);
       await context.SaveChangesAsync();
       btm.CreateToken(oldRefreshToken.Id);
 
-      if (error == "TOKEN_EXPIRED")
+      if (!isValid)
         return BadRequest("Token is invalid");
 
       return new ResponseDto<bool>
@@ -214,7 +215,7 @@ namespace auth_sevice.src.Controllers
     [HttpPost("verify-access-token")]
     public ActionResult<ResponseDto<VerifyResponse>> VerifyAccessToken(AccessTokenDto data)
     {
-      var payload = tm.VerifyAccessToken(data.AccessToken);
+      var payload = tm.ValidateAccessToken(data.AccessToken);
 
       return new ResponseDto<VerifyResponse>
       {

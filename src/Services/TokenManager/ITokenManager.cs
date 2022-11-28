@@ -8,7 +8,7 @@ namespace auth_sevice.src.Services
     public Task<Tuple<string?, Guid>> CreateRefreshToken(User user);
 
     public string CreateAccessToken(User user, Guid refreshTokenId);
-    public string? Verify(string token);
-    public AccessTokenPayload? VerifyAccessToken(string token);
+    public bool ValidateRefreshToken(string token, out Guid refreshTokenId);
+    public AccessTokenPayload? ValidateAccessToken(string token);
   }
 }

@@ -45,7 +45,9 @@ namespace auth_sevice.src.Services
       var tokens = await context.RefreshTokens.Where(t => t.UserId == user.Id).CountAsync();
       if (tokens >= 2) return new Tuple<string?, Guid>(null, refreshTokenId);
 
-      var claims = new List<Claim>();
+      var claims = new List<Claim>{
+        new Claim("jid", refreshTokenId.ToString())
+      };
 
       var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(ServerInfo.JWT_REFRESH_TOKEN_SECRET_KEY)!);
       var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
@@ -58,38 +60,49 @@ namespace auth_sevice.src.Services
       var newRefreshToken = new RefreshToken
       {
         Id = refreshTokenId,
-        UserId = user.Id,
-        Token = token
+        UserId = user.Id
       };
       await context.RefreshTokens.AddAsync(newRefreshToken);
       await context.SaveChangesAsync();
       return new Tuple<string?, Guid>(token, refreshTokenId);
     }
 
-    public string? Verify(string token)
+    public bool ValidateRefreshToken(string token, out Guid refreshTokenId)
     {
+      refreshTokenId = Guid.Empty;
       try
       {
-        new JwtSecurityTokenHandler().ValidateToken(token,
+        var claims = new JwtSecurityTokenHandler().ValidateToken(token,
                   new TokenValidationParameters
                   {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(ServerInfo.JWT_REFRESH_TOKEN_SECRET_KEY)),
                     ValidateAudience = false,
                     ValidateIssuer = false,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateLifetime = false
                   }, out SecurityToken validatedToken
               );
 
-        return null;
+        var rawRefreshTokenId = claims.FindFirstValue("jid");
+        var rawExp = claims.FindFirstValue("exp");
+        if (rawRefreshTokenId == null || rawExp == null) return false;
+
+        if (!Guid.TryParse(rawRefreshTokenId, out refreshTokenId))
+          return false;
+
+        var exp = long.Parse(rawExp);
+        if (DateTimeOffset.Now.ToUnixTimeSeconds() > exp) return false;
+
+        return true;
       }
-      catch (System.Exception e)
+      catch (System.Exception)
       {
-        return e.GetType() == typeof(SecurityTokenExpiredException) ? "TOKEN_EXPIRED" : "NOT_VALID";
+        return false;
       }
     }
 
-    public AccessTokenPayload? VerifyAccessToken(string token)
+    public AccessTokenPayload? ValidateAccessToken(string token)
     {
       try
       {
@@ -103,7 +116,7 @@ namespace auth_sevice.src.Services
                     ClockSkew = TimeSpan.Zero
                   }, out SecurityToken validatedToken
               );
-        
+
         var rawRefreshTokenId = claims.FindFirstValue("jid");
         var username = claims.FindFirstValue(ClaimTypes.Name);
         if (rawRefreshTokenId == null || username == null) return null;
