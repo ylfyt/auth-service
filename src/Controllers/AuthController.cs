@@ -91,8 +91,8 @@ namespace auth_sevice.src.Controllers
             User = user,
             Token = new TokenDto
             {
-              Access = accessToken,
-              Refresh = refreshToken
+              AccessToken = accessToken,
+              RefreshToken = refreshToken
             }
           }
         };
@@ -108,11 +108,11 @@ namespace auth_sevice.src.Controllers
     {
       try
       {
-        var error = tm.Verify(data.token);
+        var error = tm.Verify(data.RefreshToken);
         RefreshToken? oldRefreshToken = null;
         if (error == "TOKEN_EXPIRED" || error == null)
         {
-          oldRefreshToken = await context.RefreshTokens.Where(t => t.Token == data.token).FirstOrDefaultAsync();
+          oldRefreshToken = await context.RefreshTokens.Where(t => t.Token == data.RefreshToken).FirstOrDefaultAsync();
           if (oldRefreshToken != null)
           {
             context.RefreshTokens.Remove(oldRefreshToken);
@@ -138,8 +138,8 @@ namespace auth_sevice.src.Controllers
 
         new TokenDto
         {
-          Access = accessToken,
-          Refresh = refreshToken
+          AccessToken = accessToken,
+          RefreshToken = refreshToken
         };
 
         return new ResponseDto<TokenDto>
@@ -148,8 +148,8 @@ namespace auth_sevice.src.Controllers
           status = 200,
           data = new TokenDto
           {
-            Access = accessToken,
-            Refresh = refreshToken
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
           }
         };
       }
@@ -162,12 +162,12 @@ namespace auth_sevice.src.Controllers
     [HttpPost("logout")]
     public async Task<ActionResult<ResponseDto<bool>>> Logout(RefreshTokenDto data)
     {
-      var error = tm.Verify(data.token);
+      var error = tm.Verify(data.RefreshToken);
 
       if (error == "NOT_VALID")
         return BadRequest("Token is invalid");
 
-      var oldRefreshToken = await context.RefreshTokens.Where(t => t.Token == data.token).FirstOrDefaultAsync();
+      var oldRefreshToken = await context.RefreshTokens.Where(t => t.Token == data.RefreshToken).FirstOrDefaultAsync();
       if (oldRefreshToken == null) return BadRequest("Token is invalid");
 
       context.RefreshTokens.Remove(oldRefreshToken);
@@ -214,7 +214,7 @@ namespace auth_sevice.src.Controllers
     [HttpPost("verify-access-token")]
     public ActionResult<ResponseDto<VerifyResponse>> VerifyAccessToken(AccessTokenDto data)
     {
-      var payload = tm.VerifyAccessToken(data.token);
+      var payload = tm.VerifyAccessToken(data.AccessToken);
 
       return new ResponseDto<VerifyResponse>
       {
