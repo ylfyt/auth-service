@@ -3,7 +3,8 @@ using auth_sevice.src.Data;
 using auth_sevice.src.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using StackExchange.Redis;
+// using StackExchange.Redis;
+using Enyim.Caching.Configuration;
 
 DotEnv.Init();
 ServerInfo.Init();
@@ -49,13 +50,23 @@ builder.Services.AddDbContext<DataContext>(options =>
   options.UseNpgsql(ServerInfo.DB_CONNECT);
 }, ServiceLifetime.Transient);
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(
-  ConnectionMultiplexer.Connect(ServerInfo.REDIS_CONNECT)
-);
+// REDIS
+// builder.Services.AddSingleton<IConnectionMultiplexer>(
+//   ConnectionMultiplexer.Connect(ServerInfo.REDIS_CONNECT)
+// );
+
+// MEMCACHED
+builder.Services.AddEnyimMemcached(o => o.Servers = new List<Server>{
+  new Server{
+    Address = "localhost",
+    Port  = 11211
+  }
+});
 
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 // builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
-builder.Services.AddSingleton<IBlacklistTokenManager, RedisBlacklistTokenManager>();
+// builder.Services.AddSingleton<IBlacklistTokenManager, RedisBlacklistTokenManager>();
+builder.Services.AddSingleton<IBlacklistTokenManager, MemcBlacklistTokenManager>();
 
 builder.Services.AddHttpContextAccessor();
 
