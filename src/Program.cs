@@ -58,8 +58,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 // MEMCACHED
 builder.Services.AddEnyimMemcached(o => o.Servers = new List<Server>{
   new Server{
-    Address = "localhost",
-    Port  = 11211
+    Address = Environment.GetEnvironmentVariable("MEMCACHED_HOST"),
+    Port  = int.Parse(Environment.GetEnvironmentVariable("MEMCACHED_PORT")!)
   }
 });
 

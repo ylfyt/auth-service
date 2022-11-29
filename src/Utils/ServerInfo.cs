@@ -22,13 +22,12 @@ namespace auth_sevice.src.Utils
         accessTokenSecretKey == null ||
         refreshTokenSecretKey == null ||
         accessTokenExpiryTime == null ||
-        refreshTokenExpiryTime == null ||
-        redisConnect == null
+        refreshTokenExpiryTime == null
       )
         throw new Exception("======= SOME ENV VARIABLE IS NULL =======");
 
       ServerInfo.DB_CONNECT = dbConnect;
-      ServerInfo.REDIS_CONNECT = redisConnect;
+      ServerInfo.REDIS_CONNECT = redisConnect?? "";
       ServerInfo.JWT_ACCESS_TOKEN_SECRET_KEY = accessTokenSecretKey;
       ServerInfo.JWT_REFRESH_TOKEN_SECRET_KEY = refreshTokenSecretKey;
       ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME = Double.Parse(accessTokenExpiryTime);
