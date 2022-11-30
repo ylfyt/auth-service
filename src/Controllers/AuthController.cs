@@ -125,10 +125,20 @@ namespace auth_sevice.src.Controllers
         }
 
         if (!isValid || oldRefreshToken == null)
-          return BadRequest("Token is not valid");
+          return BadRequest(new ResponseDto<DataUser>
+          {
+            message = "Token is not valid",
+            status = 400,
+            success = false
+          });
 
         var user = await context.Users.FindAsync(oldRefreshToken.UserId);
-        if (user == null) return BadRequest("User not found");
+        if (user == null) return BadRequest(new ResponseDto<DataUser>
+        {
+          message = "User not found",
+          status = 400,
+          success = false
+        });
 
         var tokenData = await tm.CreateRefreshToken(user);
         var refreshToken = tokenData.Item1;
