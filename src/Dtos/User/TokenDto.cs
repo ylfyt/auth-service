@@ -6,6 +6,7 @@ namespace auth_sevice.src.Dtos
   {
     public string AccessToken { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
+    public long ExpiredIn { get; set; }
   }
 
   public class RefreshTokenDto

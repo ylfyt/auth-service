@@ -94,7 +94,8 @@ namespace auth_sevice.src.Controllers
             Token = new TokenDto
             {
               AccessToken = accessToken,
-              RefreshToken = refreshToken
+              RefreshToken = refreshToken,
+              ExpiredIn = (long)ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME
             }
           }
         };
@@ -111,8 +112,8 @@ namespace auth_sevice.src.Controllers
       try
       {
         var isValid = tm.ValidateRefreshToken(data.RefreshToken, out Guid refreshTokenId);
-      
-        RefreshToken? oldRefreshToken = null;  
+
+        RefreshToken? oldRefreshToken = null;
         if (refreshTokenId != Guid.Empty)
         {
           oldRefreshToken = await context.RefreshTokens.Where(t => t.Id == refreshTokenId).FirstOrDefaultAsync();
@@ -137,12 +138,6 @@ namespace auth_sevice.src.Controllers
 
         var accessToken = tm.CreateAccessToken(user, newRefreshTokenId);
 
-        new TokenDto
-        {
-          AccessToken = accessToken,
-          RefreshToken = refreshToken
-        };
-
         return new ResponseDto<TokenDto>
         {
           success = true,
@@ -150,7 +145,8 @@ namespace auth_sevice.src.Controllers
           data = new TokenDto
           {
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            ExpiredIn = (long)ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME
           }
         };
       }
@@ -164,7 +160,7 @@ namespace auth_sevice.src.Controllers
     public async Task<ActionResult<ResponseDto<bool>>> Logout(RefreshTokenDto data)
     {
       var isValid = tm.ValidateRefreshToken(data.RefreshToken, out Guid refreshTokenId);
-    
+
       if (!isValid && refreshTokenId == Guid.Empty)
         return BadRequest("Token is invalid");
 

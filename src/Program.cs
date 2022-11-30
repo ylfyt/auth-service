@@ -4,7 +4,7 @@ using auth_sevice.src.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 // using StackExchange.Redis;
-using Enyim.Caching.Configuration;
+// using Enyim.Caching.Configuration;
 
 DotEnv.Init();
 ServerInfo.Init();
@@ -56,17 +56,17 @@ builder.Services.AddDbContext<DataContext>(options =>
 // );
 
 // MEMCACHED
-builder.Services.AddEnyimMemcached(o => o.Servers = new List<Server>{
-  new Server{
-    Address = Environment.GetEnvironmentVariable("MEMCACHED_HOST"),
-    Port  = int.Parse(Environment.GetEnvironmentVariable("MEMCACHED_PORT")!)
-  }
-});
+// builder.Services.AddEnyimMemcached(o => o.Servers = new List<Server>{
+//   new Server{
+//     Address = Environment.GetEnvironmentVariable("MEMCACHED_HOST"),
+//     Port  = int.Parse(Environment.GetEnvironmentVariable("MEMCACHED_PORT")!)
+//   }
+// });
 
 builder.Services.AddScoped<ITokenManager, TokenManager>();
-// builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
+builder.Services.AddScoped<IBlacklistTokenManager, BlacklistTokenManager>();
 // builder.Services.AddSingleton<IBlacklistTokenManager, RedisBlacklistTokenManager>();
-builder.Services.AddSingleton<IBlacklistTokenManager, MemcBlacklistTokenManager>();
+// builder.Services.AddSingleton<IBlacklistTokenManager, MemcBlacklistTokenManager>();
 
 builder.Services.AddHttpContextAccessor();
 

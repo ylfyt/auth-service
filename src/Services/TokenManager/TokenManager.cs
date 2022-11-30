@@ -42,8 +42,8 @@ namespace auth_sevice.src.Services
     {
       var refreshTokenId = Guid.NewGuid();
 
-      var tokens = await context.RefreshTokens.Where(t => t.UserId == user.Id).CountAsync();
-      if (tokens >= 2) return new Tuple<string?, Guid>(null, refreshTokenId);
+      // var tokens = await context.RefreshTokens.Where(t => t.UserId == user.Id).CountAsync();
+      // if (tokens >= 2) return new Tuple<string?, Guid>(null, refreshTokenId);
 
       var claims = new List<Claim>{
         new Claim("jid", refreshTokenId.ToString())
