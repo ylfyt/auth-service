@@ -107,7 +107,7 @@ namespace auth_sevice.src.Controllers
     }
 
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<ResponseDto<TokenDto>>> RefreshToken(RefreshTokenDto data)
+    public async Task<ActionResult<ResponseDto<DataUser>>> RefreshToken(RefreshTokenDto data)
     {
       try
       {
@@ -138,15 +138,19 @@ namespace auth_sevice.src.Controllers
 
         var accessToken = tm.CreateAccessToken(user, newRefreshTokenId);
 
-        return new ResponseDto<TokenDto>
+        return new ResponseDto<DataUser>
         {
           success = true,
           status = 200,
-          data = new TokenDto
+          data = new DataUser
           {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            ExpiredIn = (long)ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME
+            User = user,
+            Token = new TokenDto
+            {
+              AccessToken = accessToken,
+              RefreshToken = refreshToken,
+              ExpiredIn = (long)ServerInfo.JWT_ACCESS_TOKEN_EXPIRY_TIME
+            }
           }
         };
       }
